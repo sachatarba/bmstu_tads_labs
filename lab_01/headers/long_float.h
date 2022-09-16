@@ -22,8 +22,10 @@ int copy_mantissa(long_float_t *long_number, const char *string, char **end);
 
 int read_long_float(long_float_t *long_number);
 
+void normalize_number(long_float_t *lf);
+
 void print_long_float(long_float_t *long_number);
 
-void mul_long_floats(long_float_t *long_number_1, long_float_t *long_number_2);
+int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res);
 
 void print_long_float(long_float_t *long_number);
