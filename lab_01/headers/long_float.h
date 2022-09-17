@@ -11,7 +11,7 @@ typedef enum
 typedef struct
 {
     size_t digits;
-    char mantissa[MANTISSA_SIZE];
+    unsigned char mantissa[MANTISSA_SIZE];
     int exponent;
     sign_t sign;
 } long_float_t;
@@ -29,3 +29,5 @@ void print_long_float(long_float_t *long_number);
 int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res);
 
 void print_long_float(long_float_t *long_number);
+
+void print_error(int rc);

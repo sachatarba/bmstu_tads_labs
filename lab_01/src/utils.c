@@ -53,7 +53,7 @@ const char *iter_string_while_whitespace(const char *string, direction_t directi
     return string;
 }
 
-const char *copy_digits_to_array(const char *digits, char *array, size_t *len)
+const char *copy_digits_to_array(const char *digits, unsigned char *array, size_t *len)
 {
     size_t i = 0;
 
@@ -65,6 +65,15 @@ const char *copy_digits_to_array(const char *digits, char *array, size_t *len)
     *len = i;
 
     return digits;
+}
+
+void copy_elems(int *src, unsigned char *dst, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        dst[i] = (unsigned char) src[i];
+        // printf("%d", src[i]);
+    }
 }
 
 int is_string_whitespace(const char *string)
@@ -95,7 +104,15 @@ char *strip(char *string)
     return start;
 }
 
-void print_array(char *array, const size_t len, const char separator)
+void print_array(const unsigned char *array, const size_t len, const char separator)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        printf("%u%c", array[i], separator);
+    }
+}
+
+void print_array_int(const int *array, const size_t len, const char separator)
 {
     for (size_t i = 0; i < len; ++i)
     {

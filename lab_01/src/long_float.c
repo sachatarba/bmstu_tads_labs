@@ -29,7 +29,7 @@
 void shift_number(long_float_t *lf)
 {
     memmove(lf->mantissa + MANTISSA_SIZE - lf->digits, lf->mantissa, lf->digits);
-    memset(lf->mantissa, 0, lf->digits);
+    memset(lf->mantissa, 0, MANTISSA_SIZE - lf->digits);
 }
 
 int set_sign(long_float_t *long_number, const char symbol)
@@ -196,10 +196,9 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
     normalize_number(r);
 
     size_t length = MANTISSA_SIZE * 2;
-    char *buff = malloc(sizeof(char) * length);
+    int *buff = malloc(sizeof(int) * length);
 
     res->sign = l->sign * r->sign;
-    // printf("l:%u, r:%u\n", l->exponent, r->exponent);
     res->exponent = l->exponent + r->exponent;
     res->digits = l->digits + r->digits;
 
@@ -216,7 +215,10 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
         buff[i] %= 10; 
     }
 
-    memcpy(res->mantissa + MANTISSA_SIZE - res->digits, buff + length - res->digits, res->digits);
+    copy_elems(buff + (length - res->digits), res->mantissa + (MANTISSA_SIZE - res->digits), res->digits);
+    // print_long_float(l);
+    // memcpy(res->mantissa + MANTISSA_SIZE - res->digits, buff + length - res->digits, res->digits);
+    // print_array_int(buff, length, '\0');
     normalize_number(res);
     
     free(buff);
@@ -226,6 +228,11 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
 
 void print_long_float(long_float_t *lf)
 {
+    if (lf->sign == MINUS)
+    {
+        printf("-");
+    }
+    
     printf("0.");
     print_array(lf->mantissa + MANTISSA_SIZE - lf->digits, lf->digits, NO_SPACE);
     printf("e%d\n", lf->exponent);
