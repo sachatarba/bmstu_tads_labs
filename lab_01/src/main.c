@@ -16,9 +16,12 @@ int main(void)
 
     long_float_t arr[LONG_NUMBERS];
     memset(arr, 0, sizeof(long_float_t) * LONG_NUMBERS);
-
+    printf("Программа для умножения действительных чисел");
+    printf("Числа вводятся в одну строку с обязательной точкой в мантиссе,\n мантисса и порядок разделяются большой или маленькой буквой E\n");
     for (size_t i = 0; i < NUMEBRS_TO_MUL && rc == ERR_OK; ++i)
     {
+        printf("Введите %ld - ое числое для умножения:\n", i);
+        printf("|-----------------------------| E |---|\n");
         rc = read_long_float(arr + i);
         print_error(rc);
     }
@@ -28,9 +31,5 @@ int main(void)
         print_long_float(arr + 2);
     }
 
-    // long_float_t l;
-    // read_long_float(&l);
-    // print_long_float(&l);
-    // print_array(l.mantissa, MANTISSA_SIZE, '\0');
     return rc;
 }

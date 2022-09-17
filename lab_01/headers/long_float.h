@@ -18,7 +18,11 @@ typedef struct
 
 int set_sign(long_float_t *long_number, char symbol);
 
+void shift_number(long_float_t *lf);
+
 int copy_mantissa(long_float_t *long_number, const char *string, char **end);
+
+int copy_exponent(long_float_t *long_number, const char *string, char **end);
 
 int read_long_float(long_float_t *long_number);
 

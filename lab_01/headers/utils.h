@@ -18,8 +18,8 @@ void copy_elems(int *src, unsigned char *dst, size_t len);
 
 const char *copy_digits_to_array(const char *digits, unsigned char *array, size_t *len);
 
-void print_array(const unsigned char *array, const size_t len, const char separator);
+void print_array(const unsigned char *array, const size_t len);
 
-void print_array_int(const int *array, const size_t len, const char separator);
+void print_array_int(const int *array, const size_t len);
 
 const char *iter_string_while_whitespace(const char *string, direction_t direction);

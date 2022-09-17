@@ -1,7 +1,0 @@
-3
-tovar1
-10
-tovar2
--10
-tovar3
-4

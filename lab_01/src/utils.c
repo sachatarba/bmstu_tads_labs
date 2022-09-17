@@ -5,6 +5,8 @@
 
 #include "../headers/utils.h"
 
+
+// Проверка является ли символ знаком
 int is_sign(const char symbol)
 {
     int rc = 0;
@@ -17,6 +19,7 @@ int is_sign(const char symbol)
     return rc;
 }
 
+// Проверка конца строки
 int is_end(const char symbol)
 {
     int rc = 0;
@@ -29,6 +32,8 @@ int is_end(const char symbol)
     return rc;
 }
 
+// Итерация по строке, пока символ является пробельным
+// Направление итерации задается параметром direction 
 const char *iter_string_while_whitespace(const char *string, direction_t direction)
 {
     switch (direction)
@@ -53,6 +58,8 @@ const char *iter_string_while_whitespace(const char *string, direction_t directi
     return string;
 }
 
+
+// Копирует цифры из строки, пока не встретится первый символ, не являющийся цифрой.
 const char *copy_digits_to_array(const char *digits, unsigned char *array, size_t *len)
 {
     size_t i = 0;
@@ -67,15 +74,17 @@ const char *copy_digits_to_array(const char *digits, unsigned char *array, size_
     return digits;
 }
 
+// Копирует цифры из массива src в массив dst
 void copy_elems(int *src, unsigned char *dst, size_t len)
 {
     for (size_t i = 0; i < len; ++i)
     {
         dst[i] = (unsigned char) src[i];
-        // printf("%d", src[i]);
     }
 }
 
+
+// Проверяет является ли строка пробельной
 int is_string_whitespace(const char *string)
 {
     int rc = 1;
@@ -91,6 +100,8 @@ int is_string_whitespace(const char *string)
     return rc;
 }
 
+
+// Удаляет пробелы с конца и начала строки
 char *strip(char *string)
 {
     char *start = (char*) iter_string_while_whitespace(string, FORWARD);
@@ -104,18 +115,21 @@ char *strip(char *string)
     return start;
 }
 
-void print_array(const unsigned char *array, const size_t len, const char separator)
+
+// Печать массива char
+void print_array(const unsigned char *array, const size_t len)
 {
     for (size_t i = 0; i < len; ++i)
     {
-        printf("%u%c", array[i], separator);
+        printf("%u", array[i]);
     }
 }
 
-void print_array_int(const int *array, const size_t len, const char separator)
+// Печать массива int
+void print_array_int(const int *array, const size_t len)
 {
     for (size_t i = 0; i < len; ++i)
     {
-        printf("%d%c", array[i], separator);
+        printf("%d", array[i]);
     }
 }

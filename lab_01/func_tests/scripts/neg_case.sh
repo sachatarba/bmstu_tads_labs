@@ -20,3 +20,5 @@ else
         exit 1
     fi
 fi
+
+rm file_out.txt

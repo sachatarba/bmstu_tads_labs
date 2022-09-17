@@ -8,6 +8,8 @@
 
 #define BUFF_SIZE 100
 
+#define MAX_EXPONENT 100000
+
 #define ERR_OK                0
 #define ERR_READING           1
 #define ERR_EMPTY             2
@@ -21,17 +23,15 @@
 
 #define NO_SPACE '\0'
 
-// void init_long_float(long_float_t *long_number)
-// {
-//     long_number->mantissa = malloc(sizeof(char) * MANTISSA_SIZE);
-// }
-
+// Сдвиг мантиссы в конец
 void shift_number(long_float_t *lf)
 {
     memmove(lf->mantissa + MANTISSA_SIZE - lf->digits, lf->mantissa, lf->digits);
     memset(lf->mantissa, 0, MANTISSA_SIZE - lf->digits);
 }
 
+
+// Установка знака длинного числа
 int set_sign(long_float_t *long_number, const char symbol)
 {
     int rc = ERR_OK;
@@ -52,6 +52,7 @@ int set_sign(long_float_t *long_number, const char symbol)
     return rc;
 }
 
+// Копирование мантиссы из строки
 int copy_mantissa(long_float_t *long_number, const char *string, char **end)
 {
     int rc = ERR_OK;
@@ -77,6 +78,7 @@ int copy_mantissa(long_float_t *long_number, const char *string, char **end)
     return rc;
 }
 
+// Копирование экспоненты из строки
 int copy_exponent(long_float_t *long_number, const char *string, char **end)
 {
     int rc = ERR_OK;
@@ -99,6 +101,8 @@ int copy_exponent(long_float_t *long_number, const char *string, char **end)
     return rc;
 }
 
+
+/// Чтение длинного числа 
 int read_long_float(long_float_t *long_number)
 {
     int rc = ERR_OK;
@@ -161,6 +165,7 @@ int read_long_float(long_float_t *long_number)
     return rc;
 }
 
+// Нормализация числа
 void normalize_number(long_float_t *lf)
 {
     for (size_t i = MANTISSA_SIZE - lf->digits; i < MANTISSA_SIZE; ++i)
@@ -177,16 +182,20 @@ void normalize_number(long_float_t *lf)
     }
 }
 
-void remove_zeros(long_float_t *lf)
-{
-    size_t i = MANTISSA_SIZE - lf->digits;
-    while (lf->mantissa[i] == 0 && i < MANTISSA_SIZE)
-    {
-        --lf->digits;
-        ++i;
-    }
-}
 
+// Удаление незначащих нулей
+// void remove_zeros(long_float_t *lf)
+// {
+//     size_t i = MANTISSA_SIZE - lf->digits;
+//     while (lf->mantissa[i] == 0 && i < MANTISSA_SIZE)
+//     {
+//         --lf->digits;
+//         ++i;
+//     }
+// }
+
+
+// Умножение чдлинных чисел
 int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
 {
     int rc = ERR_OK;
@@ -218,7 +227,7 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
     const int size = res->digits < MANTISSA_SIZE ? res->digits : MANTISSA_SIZE;
     copy_elems(buff + (length - res->digits), res->mantissa + (MANTISSA_SIZE - size), size);
     res->digits = size;
-    
+
     normalize_number(res);
     
     free(buff);
@@ -226,18 +235,32 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
     return rc;
 }
 
+// Печать длинного числа 
 void print_long_float(long_float_t *lf)
 {
-    if (lf->sign == MINUS)
+    if (lf->digits == 0)
     {
-        printf("-");
+        printf("0e0\n");
     }
+    else if (abs(lf->exponent) >= MAX_EXPONENT )
+    {
+        printf("Переполнение экспоненты!\n");
+    }
+    else
+    {
+        if (lf->sign == MINUS)
+        {
+            printf("-");
+        }
     
-    printf("0.");
-    print_array(lf->mantissa + MANTISSA_SIZE - lf->digits, lf->digits, NO_SPACE);
-    printf("e%d\n", lf->exponent);
+        printf("0.");
+        print_array(lf->mantissa + MANTISSA_SIZE - lf->digits, lf->digits);
+        printf("e%d\n", lf->exponent);
+    }
 }
 
+
+// Печать ошибки
 void print_error(int rc)
 {
     switch (rc)

@@ -1,1 +1,0 @@
-./func_tests/data/neg_05_in.txt 10

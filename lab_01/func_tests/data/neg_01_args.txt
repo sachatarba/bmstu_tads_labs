@@ -1,1 +1,0 @@
-./func_tests/data/neg_22_in.txt 9
