@@ -215,10 +215,10 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
         buff[i] %= 10; 
     }
 
-    copy_elems(buff + (length - res->digits), res->mantissa + (MANTISSA_SIZE - res->digits), res->digits);
-    // print_long_float(l);
-    // memcpy(res->mantissa + MANTISSA_SIZE - res->digits, buff + length - res->digits, res->digits);
-    // print_array_int(buff, length, '\0');
+    const int size = res->digits < MANTISSA_SIZE ? res->digits : MANTISSA_SIZE;
+    copy_elems(buff + (length - res->digits), res->mantissa + (MANTISSA_SIZE - size), size);
+    res->digits = size;
+    
     normalize_number(res);
     
     free(buff);
