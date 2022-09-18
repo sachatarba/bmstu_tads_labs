@@ -144,8 +144,7 @@ int read_long_float(long_float_t *long_number)
                 else
                 {
                     rc = ERR_READING_MANTISSA;
-                }
-                
+                }               
             }
             else
             {
