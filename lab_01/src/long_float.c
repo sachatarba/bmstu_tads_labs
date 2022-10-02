@@ -182,6 +182,14 @@ void normalize_number(long_float_t *lf)
 }
 
 
+// void round_array(int *array, size_t size)
+// {
+//     if (array[MANTISSA_SIZE] >= 5)
+//     {
+
+//     }
+// }
+
 // Удаление незначащих нулей
 // void remove_zeros(long_float_t *lf)
 // {
@@ -192,7 +200,7 @@ void normalize_number(long_float_t *lf)
 //         ++i;
 //     }
 // }
-
+//9999999999999999999999999999980
 
 // Умножение чдлинных чисел
 int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
@@ -206,7 +214,7 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
     size_t length = MANTISSA_SIZE * 2;
     int *buff = malloc(sizeof(int) * length);
 
-    res->sign = l->sign * r->sign;
+    res->sign = (l->sign == r->sign);
     res->exponent = l->exponent + r->exponent;
     res->digits = l->digits + r->digits;
 
@@ -218,12 +226,33 @@ int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
         }
     }
     
-    for (size_t i = length; i > 0; i--) {
+    for (size_t i = length; i > 0; i--)
+    {
         buff[i - 1] += buff[i] / 10;
         buff[i] %= 10; 
     }
+    
+    while (buff[length - res->digits] == 0)
+    {
+        --res->digits;
+        --res->exponent;
+    }
 
+    if (res->digits > MANTISSA_SIZE)
+    {
+        if (buff[length - res->digits + MANTISSA_SIZE] >= 5)
+        {
+            ++buff[length - res->digits + MANTISSA_SIZE - 1];
+        }
+        for (size_t i = length - res->digits + MANTISSA_SIZE - 1; i > 0; i--)
+        {
+            buff[i - 1] += buff[i] / 10;
+            buff[i] %= 10; 
+        }
+    }
+    
     const int size = res->digits < MANTISSA_SIZE ? res->digits : MANTISSA_SIZE;
+
     copy_elems(buff + (length - res->digits), res->mantissa + (MANTISSA_SIZE - size), size);
     res->digits = size;
 
@@ -240,6 +269,7 @@ void print_long_float(long_float_t *lf)
     if (lf->digits == 0)
     {
         printf("0e0\n");
+        // 0.90000000000000000000000000002
     }
     else if (abs(lf->exponent) >= MAX_EXPONENT )
     {
