@@ -9,6 +9,8 @@
 
 #define BUFF_SIZE 200
 
+#define RADIX 10
+
 // Итерация по строке, пока символ является пробельным
 // Направление итерации задается параметром direction 
 const char *iter_string_while_whitespace(const char *string, direction_t direction)
@@ -104,6 +106,47 @@ error_t read_string(FILE *fp, char *dst, size_t max_size)
     else
     {
         rc = ERR_INV_PTR;
+    }
+
+    return rc;
+}
+
+error_t parse_number(char *buffer, long long *number)
+{
+    error_t rc = OK;
+
+    char *end;
+    *number = (long long) strtol(buffer, &end, RADIX);
+
+    if (*end != '\r' && *end != '\n' && *end != '\0')
+    {
+        rc = ERR_READING;
+    }
+
+    return rc;
+}
+
+error_t read_size_number(FILE *fp, size_t *size)
+{
+    error_t rc = OK;
+
+    char buff[BUFF_SIZE] = "\0";
+    if (fgets(buff, BUFF_SIZE, fp) != NULL)
+    {
+        long long temp;
+        char *buff_stripped = strip(buff);
+        if ((rc = parse_number(buff_stripped, &temp)) == OK && temp >= 0)
+        {
+            *size = (size_t) temp;
+        }
+        else
+        {
+            rc = ERR_BAD_SIZE;
+        }
+    }
+    else
+    {
+        rc = ERR_READING;
     }
 
     return rc;

@@ -1,8 +1,10 @@
 CC := gcc 
-CFLAGS := -std=c99 -Werror -Wall -pedantic -Wextra
+CFLAGS := -std=c11 -Werror -Wall -pedantic -Wextra -g3
 CHECK_FLAGS := $(shell pkg-config --cflags --libs check)
 
-OBJS :=  ./out/tourism_t.o ./out/string_utils.o ./out/country_t.o ./out/table_countries.o
+OBJS :=  ./out/tourism_t.o ./out/string_utils.o ./out/country_t.o ./out/comparator.o ./out/countries_table_t.o\
+./out/sorts.o ./out/countries_with_keys_t.o ./out/time.o
+
 OBJS_CHECK :=  $(OBJS) ./unit_tests/out/check_process.o
 
 app.exe : $(OBJS) ./out/main.o

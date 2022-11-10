@@ -10,8 +10,11 @@ enum error_t
     ERR_EMPTY_INPUT,
     ERR_NO_FILE,
     ERR_BUFF_OVERLOAD,
-    ERR_BAD_SIZE
+    ERR_BAD_SIZE,
+    ERR_BAD_COMMAND
 };
+
+// void print_error(error_t rc);   
 
 typedef enum error_t error_t;
 

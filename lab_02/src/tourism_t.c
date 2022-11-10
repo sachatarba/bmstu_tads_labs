@@ -7,9 +7,6 @@
 
 #define BUFF_SIZE 256
 
-#define NAMES_SIZE 4
-#define TOURS_SIZE 3
-
 const char *types_of_main_tour[] = 
 {
      "экскурсионный", "пляжный", "спортивный" 
@@ -143,12 +140,26 @@ error_t read_excursions(FILE *fp, tourism_t *tour)
     {
         if (tour != NULL)
         {
+            if (fp == stdin)
+                printf("Введите экскурсионный тип:");
             if ((rc = read_enum(fp, tour, EXCURSIONS)) == OK)
             {
-                if (fscanf(fp, "%zu\n", &tour->excursions.number_of_objects) != 1)
-                {
-                    rc = ERR_READING;
-                }
+                if (fp == stdin)
+                    printf("Введите число объектов:");
+                rc = read_size_number(fp, &tour->excursions.number_of_objects);
+                // char buff[BUFF_SIZE] = "\0";
+                // if (fgets(buff, BUFF_SIZE, fp) != NULL)
+                // {
+                //     long long temp;
+                //     if ((rc = parse_number(buff, &temp)) == OK && temp > 0)
+                //     {
+                //         tour->excursions.number_of_objects = (size_t) temp;
+                //     }
+                // }
+                // if (fscanf(fp, "%zu\n", &tour->excursions.number_of_objects) != 1)
+                // {
+                //     rc = ERR_READING;
+                // }
             }
             
         }
@@ -197,12 +208,24 @@ error_t read_beachfront(FILE *fp, tourism_t *tour)
     {
         if (tour != NULL)
         {
+            if (fp == stdin)
+                printf("Введите сезон:");
+
             if ((rc = read_enum(fp, tour, BEACHFRONT)) == OK)
             {
-                if (fscanf(fp, "%zu\n %zu\n", &tour->beachfront.air_temperature, &tour->beachfront.water_temperature) != 2)
+                if (fp == stdin)
+                    printf("Введите температуру воздуха:");
+                rc = read_size_number(fp, &tour->beachfront.air_temperature);
+                if (rc == OK)
                 {
-                    rc = ERR_READING;
+                    if (fp == stdin)
+                        printf("Введите температуру воды:");
+                    rc = read_size_number(fp, &tour->beachfront.water_temperature);
                 }
+                // if (fscanf(fp, "%zu\n %zu\n", &tour->beachfront.air_temperature, &tour->beachfront.water_temperature) != 2)
+                // {
+                //     rc = ERR_READING;
+                // }
             }           
         }
         else
@@ -251,12 +274,17 @@ error_t read_sports(FILE *fp, tourism_t *tour)
     {
         if (tour != NULL)
         {
+            if (fp == stdin)
+                printf("Введите тип спорта:");
             if ((rc = read_enum(fp, tour, SPORTS)) == OK)
             {
-                if (fscanf(fp, "%zu\n", &tour->sports.min_holiday_cost) != 1)
-                {
-                    rc = ERR_READING;
-                }
+                if (fp == stdin)
+                    printf("Введите минимальную стоимость:");
+                rc = read_size_number(fp, &tour->sports.min_holiday_cost);
+                // if (fscanf(fp, "%zu\n", &tour->sports.min_holiday_cost) != 1)
+                // {
+                //     rc = ERR_READING;
+                // }
             }
             
         }

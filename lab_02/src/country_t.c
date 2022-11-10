@@ -91,25 +91,40 @@ error_t read_country(FILE *fp, country_t *country)
     {
         if (country != NULL)
         {
+            if (fp == stdin)
+                printf("Введите навзание страны: ");
             rc = read_string(fp, country->name, BUFF);
 
             if (rc == OK)
             {
-                if (fscanf(fp, "%zu\n", &country->number_of_inhabitants) == 1)
+                if (fp == stdin)
+                        printf("Введите число житилей: ");
+
+                // if (fscanf(fp, "%zu\n", &country->number_of_inhabitants) == 1)
+                if (read_size_number(fp, &country->number_of_inhabitants) == OK)
                 {
+                    if (fp == stdin)
+                        printf("Введите навзание столицы: ");
+                    
                     rc = read_string(fp, country->capital, BUFF);
 
                     if (rc == OK)
                     {
+                        if (fp == stdin)
+                            printf("Введите навзание материка:");
                         rc = read_string(fp, country->mainland, BUFF);
 
                         if (rc == OK)
                         {
+                            if (fp == stdin)
+                                printf("Введите прививку/пцр:");
                             rc = read_string(fp, country->vaccination, BUFF);
 
                             if (rc == OK)
                             {
                                  
+                                if (fp == stdin)
+                                    printf("Введите тип туризма:");
                                 rc = read_main_tour_name(fp, &country->main_tour_name);
                                 
                                if (rc == OK)

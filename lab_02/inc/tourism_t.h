@@ -6,6 +6,9 @@
 #include "../inc/error_t.h"
 #include "../inc/abstract_enum_t.h"
 
+#define NAMES_SIZE 4
+#define TOURS_SIZE 3
+
 enum tourism_name
 {
     EXCURSIONS,
@@ -59,6 +62,8 @@ union tourism
 typedef union tourism tourism_t;
 
 error_t find_name(tourism_name_t name, char *name_to_find, abstract_enum_t *ind);
+
+error_t find_main_tour(char *name_to_find, abstract_enum_t *ind);
 
 error_t read_enum(FILE *fp, tourism_t *tour, tourism_name_t name);
 
