@@ -3,10 +3,10 @@
 #include "../inc/transform.h"
 #include "../inc/utils.h"
 
-/// @brief 
+/// @brief переводит matr_t к sparse_matr_t
 /// @param matr 
 /// @param sp_matr 
-/// @return 
+/// @return разреженное представление матрицы
 error_t transform_to_sparse_matr(matr_t *matr, sparse_matr_t **sp_matr)
 {
     error_t rc = OK;
@@ -50,7 +50,15 @@ error_t transform_to_sparse_matr(matr_t *matr, sparse_matr_t **sp_matr)
                     }
                 }
 
-                is_first_elm_of_row = true;
+                if (is_first_elm_of_row == true)
+                {
+                    (*sp_matr)->row_begin_ind[i] = -1;
+                }
+                else
+                {
+                    is_first_elm_of_row = true;
+                }
+                
             }
         }
         else
@@ -63,5 +71,8 @@ error_t transform_to_sparse_matr(matr_t *matr, sparse_matr_t **sp_matr)
         rc = ERR_INV_STRUCT_PTR;
     }
 
+    // printf("|");
+    // print_array_size_t((*sp_matr)->row_begin_ind, (*sp_matr)->rows);
+    // printf("|");
     return rc;
 }

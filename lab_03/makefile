@@ -2,7 +2,7 @@ CC := gcc
 CFLAGS := -std=c11 -Werror -Wall -pedantic -Wextra -g3
 CHECK_FLAGS := $(shell pkg-config --cflags --libs check)
 
-OBJS :=  ./out/matr_t.o ./out/utils.o ./out/transform.o ./out/sparse_matr_t.o
+OBJS :=  ./out/matr_t.o ./out/utils.o ./out/transform.o ./out/sparse_matr_t.o ./out/mytime.o
 
 OBJS_CHECK :=  $(OBJS) ./unit_tests/out/check_process.o
 

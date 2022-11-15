@@ -57,8 +57,13 @@ int get_elm(sparse_matr_t *sp_matr, size_t row, size_t col)
 {
     int ret = 0;
     size_t ind_of_row_begin = sp_matr->row_begin_ind[row];
-    size_t ind_of_row_end = (row < sp_matr->rows - 1) ? sp_matr->row_begin_ind[row + 1] : sp_matr->elems_count;
 
+    if (ind_of_row_begin == (size_t) -1)
+        return ret;
+
+    size_t ind_of_row_end = (row < sp_matr->rows - 1) ? sp_matr->row_begin_ind[row + 1] : sp_matr->elems_count;
+    ind_of_row_end = (ind_of_row_end == (size_t) -1) ? sp_matr->elems_count : ind_of_row_end;
+    
     for (size_t i = ind_of_row_begin; i < ind_of_row_end; ++i)
     {
         if (sp_matr->cols_ind[i] == col)
@@ -98,13 +103,20 @@ error_t mul_sp_matr_and_sp_vector(sparse_matr_t *sp_matr, sparse_matr_t *sp_vect
         *result = create_sparse_matr(sp_matr->rows, 1, sp_matr->rows);
         int *vector = calloc(sp_vector->rows, sizeof(int));
 
-        for (size_t i = 0; i < sp_vector->elems_count; ++i)
+        // printf("\n");
+        // print_array_size_t(sp_vector->row_begin_ind, sp_vector->rows);
+        // printf("\n");
+        for (size_t i = 0; i < sp_vector->rows; ++i)
         {
-            vector[sp_vector->row_begin_ind[i]] = sp_vector->elems[i];
+            if (sp_vector->row_begin_ind[i] != (size_t) -1)
+                vector[i] = sp_vector->elems[sp_vector->row_begin_ind[i]];
+            else
+                vector[i] = 0; 
         }
-        // printf("|");
+        // printf("ajjkjijijoi\n");
+        // printf("\n|");
         // print_array_int(vector, sp_vector->rows);
-        // printf("|");
+        // printf("|\n");
         int sum = 0;
         int count = 0;
         for (size_t i = 0; i < sp_matr->rows; ++i)
