@@ -32,4 +32,6 @@ error_t mul_sparse_matr(sparse_matr_t *l, sparse_matr_t *r, sparse_matr_t *res);
 
 error_t mul_sp_matr_and_sp_vector(sparse_matr_t *sp_matr, sparse_matr_t *sp_vector, sparse_matr_t **result);
 
+// error_t mul_sp_matr_and_sp_vector(sparse_matr_t *sp_matr, sparse_matr_t *sp_vector, sparse_matr_t **result)
+
 #endif  // __SPARSE_MATR_T_H__

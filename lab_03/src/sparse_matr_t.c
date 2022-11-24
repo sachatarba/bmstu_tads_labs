@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../inc/sparse_matr_t.h"
 #include "../inc/utils.h"
@@ -62,12 +63,24 @@ int get_elm(sparse_matr_t *sp_matr, size_t row, size_t col)
         return ret;
 
     size_t ind_of_row_end = (row < sp_matr->rows - 1) ? sp_matr->row_begin_ind[row + 1] : sp_matr->elems_count;
-    ind_of_row_end = (ind_of_row_end == (size_t) -1) ? sp_matr->elems_count : ind_of_row_end;
+    // ind_of_row_end = (ind_of_row_end == (size_t) -1) ? sp_matr->elems_count : ind_of_row_end;
+
+    size_t i = row + 1; 
+    while (ind_of_row_end == (size_t) -1 && i < sp_matr->rows)
+    {
+        ind_of_row_end = sp_matr->row_begin_ind[i++];
+    }
     
+    if (ind_of_row_end == (size_t) -1)
+        ind_of_row_end = sp_matr->elems_count;
+
     for (size_t i = ind_of_row_begin; i < ind_of_row_end; ++i)
     {
         if (sp_matr->cols_ind[i] == col)
+        {
             ret = sp_matr->elems[i];
+            break;
+        }
     }
 
     return ret;
@@ -98,50 +111,60 @@ error_t mul_sp_matr_and_sp_vector(sparse_matr_t *sp_matr, sparse_matr_t *sp_vect
 {
     error_t rc = OK;
 
-    if (sp_matr && sp_matr)
+    if (sp_matr && sp_vector)
     {
-        *result = create_sparse_matr(sp_matr->rows, 1, sp_matr->rows);
-        int *vector = calloc(sp_vector->rows, sizeof(int));
+        if (sp_matr->cols == sp_vector->rows)
+        {
+            *result = create_sparse_matr(sp_matr->rows, 1, sp_matr->rows);
+            int *vector = calloc(sp_vector->rows, sizeof(int));
 
-        // printf("\n");
-        // print_array_size_t(sp_vector->row_begin_ind, sp_vector->rows);
-        // printf("\n");
-        for (size_t i = 0; i < sp_vector->rows; ++i)
-        {
-            if (sp_vector->row_begin_ind[i] != (size_t) -1)
-                vector[i] = sp_vector->elems[sp_vector->row_begin_ind[i]];
-            else
-                vector[i] = 0; 
-        }
-        // printf("ajjkjijijoi\n");
-        // printf("\n|");
-        // print_array_int(vector, sp_vector->rows);
-        // printf("|\n");
-        int sum = 0;
-        int count = 0;
-        for (size_t i = 0; i < sp_matr->rows; ++i)
-        {
-            sum = 0;
-            for (size_t j = 0; j < sp_vector->rows; ++j)
+            // printf("\n");
+            // print_array_size_t(sp_vector->row_begin_ind, sp_vector->rows);
+            // printf("\n");
+            for (size_t i = 0; i < sp_vector->rows; ++i)
             {
-                if (vector[j] != 0)
+                if (sp_vector->row_begin_ind[i] != (size_t) -1)
+                    vector[i] = sp_vector->elems[sp_vector->row_begin_ind[i]];
+                else
+                    vector[i] = 0; 
+            }
+            // printf("ajjkjijijoi\n");
+            // printf("\n|");
+            // print_array_int(vector, sp_vector->rows);
+            // printf("|\n");
+            int sum = 0;
+            int count = 0;
+            for (size_t i = 0; i < sp_matr->rows; ++i)
+            {
+                sum = 0;
+                for (size_t j = 0; j < sp_vector->rows; ++j)
                 {
-                    sum += get_elm(sp_matr, i, j) * vector[j];
-                    // printf("\nelm(%ld, %ld): %d\n",i, j, get_elm(sp_matr, i, j));
+                    if (vector[j] != 0)
+                    {
+                        sum += get_elm(sp_matr, i, j) * vector[j];
+                        // printf("\nelm(%ld, %ld): %d\n",i, j, get_elm(sp_matr, i, j));
+                    }
+                }
+
+                if (sum != 0)
+                {
+                    // printf("\nsum: %d\n", sum);
+                    (*result)->elems[count] = sum;
+                    (*result)->cols_ind[count] = 0;
+                    (*result)->row_begin_ind[i] = count++;
+                }
+                else
+                {
+                    (*result)->row_begin_ind[i] = (size_t) -1;
                 }
             }
-
-            if (sum != 0)
-            {
-                // printf("\nsum: %d\n", sum);
-                (*result)->elems[count] = sum;
-                (*result)->cols_ind[count] = 0;
-                (*result)->row_begin_ind[i] = count++;
-            }
+            // (*result)->rows = count;
+            (*result)->elems_count = count;
         }
-        // (*result)->rows = count;
-        (*result)->elems_count = count;
-
+        else
+        {
+            rc = ERR_BAD_SIZE;
+        }
     }
     else
     {
@@ -213,3 +236,51 @@ error_t mul_sp_matr_and_sp_vector(sparse_matr_t *sp_matr, sparse_matr_t *sp_vect
 
 //     return rc;
 // }
+
+
+// error_t print_sparse_matr(FILE *fp, sparse_matr_t *sp_matr)
+// {
+//     // print_array_int(sp_matr->elems, sp_matr->elems_count);
+//     // printf("\n");
+//     for (size_t i = 0; i < sp_matr->elems_count; ++i)
+//     {
+//         int elm = get_elm(sp_matr, 0, i);
+//         if (elm != 0)
+//             fprintf(fp, "Номер строки: %zu, значение элемента: %d", i, elm);
+//         // if (sp_matr->row_begin_ind[i] != (size_t) -1)
+//             // fprintf(fp, "%zu", sp_matr->row_begin_ind[i]);   
+//     }
+
+//     return 0;
+// }
+
+
+error_t print_sparse_matr(FILE *fp, sparse_matr_t *sp_matr)
+{
+    error_t rc = OK;
+    
+    if (sp_matr)
+    {
+        for (size_t i = 0; i < sp_matr->rows; ++i)
+        {
+            for (size_t j = 0; j < sp_matr->cols; ++j)
+            {
+                int elm =  get_elm(sp_matr, i, j);
+
+                if (elm != 0)
+                {
+                    fprintf(fp, "Номер строки: %zu, значение элемента: %d", i, elm);
+                    fprintf(fp, "\n");
+                }
+            }
+                // printf("%d ", get_elm(sp_matr, i, j));
+            // printf("\n");
+        }    
+    }
+    else
+    {
+        rc = ERR_INV_STRUCT_PTR;
+    }
+
+    return rc;
+}

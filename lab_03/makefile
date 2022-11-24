@@ -6,7 +6,7 @@ OBJS :=  ./out/matr_t.o ./out/utils.o ./out/transform.o ./out/sparse_matr_t.o ./
 
 OBJS_CHECK :=  $(OBJS) ./unit_tests/out/check_process.o
 
-app.exe : $(OBJS) ./out/main.o
+app.exe : $(OBJS) ./out/main1.o
 	$(CC) $^ -o app.exe
 
 unit_tests.exe : $(OBJS_CHECK) 

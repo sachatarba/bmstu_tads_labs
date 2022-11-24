@@ -49,4 +49,8 @@ error_t read_matr_by_coords(FILE *fp, matr_t *matr);
 
 error_t rand_sparse_matr_by_percent(matr_t *matr, size_t rows, size_t cols, size_t discharge_percentage);
 
+error_t read_vector(FILE *fp, matr_t *matr);
+
+error_t read_vector_by_coords(FILE *fp, matr_t *matr);
+
 #endif

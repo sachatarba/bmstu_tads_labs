@@ -18,7 +18,9 @@ enum error
     ERR_BAD_ROW_IND,
     ERR_READING,
     ERR_ALLOC_MATR,
-    ERR_PERCENT
+    ERR_PERCENT,
+    ERR_BAD_COMMAND,
+    ERR_BAD_PERCENT
 };
 
 typedef enum error error_t;

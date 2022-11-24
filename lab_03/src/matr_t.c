@@ -8,7 +8,7 @@
 #include "../inc/utils.h"
 #include "../inc/matr_t.h"
 
-#define RESIZE 2
+#define RESIZE 1
 #define MAX_SIZE 5000
 #define EPS 1e-7
 
@@ -81,7 +81,7 @@ error_t free_matr(matr_t *matr)
         {
             for (size_t i = 0; i < matr->rows_allocated; ++i)
             {
-                if (matr->body[i] != NULL)
+                if (matr->body + i != NULL && matr->body[i] != NULL)
                 {
                     free(matr->body[i]);
                     matr->body[i] = NULL;
@@ -102,6 +102,63 @@ error_t free_matr(matr_t *matr)
         else
         {
             rc = ERR_INV_PTR;
+        }
+    }
+    else
+    {
+        rc = ERR_INV_STRUCT_PTR;
+    }
+
+    return rc;
+}
+
+error_t read_vector(FILE *fp, matr_t *matr)
+{
+    error_t rc = OK;
+
+    if (matr != NULL)
+    {
+        int64_t rows = 0;
+
+        if (fp == stdin)
+            printf("Введите число строк: ");
+        if (fscanf(fp, "%" PRId64, &rows) == 1)
+        {
+            if (rows > 0)
+            {
+                if (fp == stdin)
+                    printf("Введите элементы: ");
+                if ((rc = create_matr(matr, rows, 1)) == OK)
+                {
+                    for (size_t cur_row = 0; cur_row < matr->rows; ++cur_row)
+                    {
+                        // for (size_t cur_col = 0; cur_col < matr->cols; ++cur_col)
+                        // {
+                            if (fscanf(fp, "%lld", &matr->body[cur_row][0]) != 1)
+                            {
+                                rc = ERR_READING;
+                            }
+                        // }
+                    }
+
+                    if (rc != OK)
+                    {
+                        free_matr(matr);
+                    }
+                }
+            }
+            else if (rows <= 0)
+            {
+                rc = ERR_BAD_ROWS;
+            }
+            else
+            {
+                rc = ERR_BAD_COLS;
+            }
+        }
+        else
+        {
+            rc = ERR_READING;
         }
     }
     else
@@ -217,6 +274,65 @@ error_t read_matr_by_coords(FILE *fp, matr_t *matr)
             else
             {
                 rc = ERR_BAD_COLS;
+            }
+        }
+        else
+        {
+            rc = ERR_READING;
+        }
+    }
+    else
+    {
+        rc = ERR_INV_STRUCT_PTR;
+    }
+
+    return rc;   
+}
+
+error_t read_vector_by_coords(FILE *fp, matr_t *matr)
+{
+     error_t rc = OK;
+
+    if (matr != NULL)
+    {
+        int64_t rows = 0;
+        if (fp == stdin)
+            printf("Введите число строк: ");
+        if (fscanf(fp, "%" PRId64, &rows) == 1)
+        {
+            if (rows > 0)
+            {
+                if ((rc = create_matr(matr, rows, 1)) == OK)
+                {
+                    if (fp == stdin)
+                        printf("Введите число элементов, которые вы хотите заполнить: ");
+                    
+                    int size, row, elm = 0;
+                    fscanf(fp, "%d", &size);
+                    if (size > 0)
+                        for (size_t cur_elm= 0; cur_elm < (size_t) size; ++cur_elm)
+                        {
+                            if (fp == stdin)
+                                printf("Введите строку и значения элемента матрицы: ");
+                            fscanf(fp, "%d %d", &row, &elm);
+
+                            if (row >=0 && row < rows)
+                                matr->body[row][0] = elm;
+                            else
+                                rc = ERR_BAD_SIZE;
+                        }
+                    else
+                        rc = ERR_BAD_SIZE;
+
+                    if (rc != OK)
+                    {
+                        free_matr(matr);
+                    }
+                }
+            }
+            else if (rows <= 0)
+            {
+                rc = ERR_BAD_ROWS;
             }
         }
         else
@@ -611,6 +727,7 @@ error_t rand_sparse_matr_by_percent(matr_t *matr, size_t rows, size_t cols, size
                 if (rc == OK)
                 {
                     size_t not_zero_elms_num = rows * cols * discharge_percentage / 100;
+                    // not_zero_elms_num = not_zero_elms_num ? not_zero_elms_num > 0
                     size_t r = 0, c = 0;
 
                     for (size_t i = 0; i < not_zero_elms_num; ++i)
