@@ -8,6 +8,8 @@
 
 typedef struct stack_list* stack_list_t;
 
+unsigned long long get_node_size(void);
+
 stack_list_t create_stack_list(void);
 
 void destroy_stack_list(stack_list_t s);

@@ -25,6 +25,10 @@ struct stack_list
     size_t elms;
 };
 
+unsigned long long get_node_size(void)
+{
+    return sizeof(struct node);
+}
 
 stack_list_t create_stack_list(void)
 {
@@ -47,6 +51,7 @@ void destroy_stack_list(stack_list_t s)
         (void) pop_stack_list(s, &item);
 
     free(s);
+    free_addrs.size = 0;
 }
 
 
@@ -62,7 +67,7 @@ bool is_full_stack_list(const stack_list_t s)
 {
 	assert(s);
 	
-    return s->elms + 1 <= MAX_SIZE;
+    return s->elms >= MAX_SIZE;
 }
 
 
@@ -101,6 +106,7 @@ int pop_stack_list(stack_list_t s, DATA_TYPE *i)
     s->top = node->next;
 
     free(node);
+    --s->elms;
 
     return 0;
 }
