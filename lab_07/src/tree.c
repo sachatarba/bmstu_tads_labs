@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../inc/tree.h"
 
+int btries;
 
 struct tree_node_t* btree_insert(struct tree_node_t *tree, struct tree_node_t *node)
 {
@@ -34,7 +35,7 @@ struct tree_node_t* btree_insert(struct tree_node_t *tree, struct tree_node_t *n
 struct tree_node_t* btree_lookup_1(struct tree_node_t *tree, const char *name)
 {
     int cmp;
-
+    // btries = 0;
     if (tree == NULL)
         return NULL;
 
@@ -52,7 +53,7 @@ struct tree_node_t* btree_lookup_1(struct tree_node_t *tree, const char *name)
 struct tree_node_t* btree_lookup_2(struct tree_node_t *tree, const char *name)
 {
     int cmp;
-
+    btries = 1;
     while (tree != NULL)
     {
         // cmp = strcmp(name, tree->name);
@@ -63,6 +64,7 @@ struct tree_node_t* btree_lookup_2(struct tree_node_t *tree, const char *name)
             tree = tree->left;
         else
             tree = tree->right;
+        ++btries;
     }
 
     return NULL;

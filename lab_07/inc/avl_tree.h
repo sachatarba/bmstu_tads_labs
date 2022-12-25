@@ -44,4 +44,7 @@ avl_node_t* avl_remove(avl_node_t* p, int k);
 
 void avl_tree_export_to_dot(FILE *f, const char *tree_name, avl_node_t *tree);
 
+
+avl_node_t *avl_tree_lookup_2(avl_node_t *tree, int num);
+
 #endif //  __AVL_TREE_T_H__

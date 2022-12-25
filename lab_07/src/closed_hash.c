@@ -85,6 +85,7 @@ void cl_insert(closed_hash_table_t **ht, DATA_TYPE data)
     size_t tries = 1;
 
     size_t ind = cl_hash(*ht, data);
+    // printf("in ins: %d", data);
 
     if (!(*ht)->data[ind])
     {
@@ -92,6 +93,7 @@ void cl_insert(closed_hash_table_t **ht, DATA_TYPE data)
         (*ht)->cur_tries += tries;
         ++(*ht)->count;
         (*ht)->average = (*ht)->cur_tries / ((double) (*ht)->count); 
+        // printf("Среднее число сравнений: %lf\n", (*ht)->average);
     }
     else
     {
@@ -100,37 +102,58 @@ void cl_insert(closed_hash_table_t **ht, DATA_TYPE data)
             ind = (ind + 1) % (*ht)->size;
             ++tries;
 
-            if (tries > (*ht)->size)
+            if (tries - 1 > (*ht)->size)
             {
-                printf("В таблице больше нет места!\n");
-                break;
+                printf("В таблице больше нет места, таблица была реструктурирована!\n");
+                *ht = restruct_cl_ht(*ht);
+                ind = cl_hash(*ht, data);
+                // break;
             }
 
             // TODO
-            if (tries > (*ht)->tries)
-            {
-                *ht = restruct_cl_ht(*ht);
-                printf("Превышено максимальное число сравнений, таблица была реструктурирована!\n");
-                cl_insert(ht, data);
-            }
+            // if (tries > (*ht)->tries)
+            // {
+            //     *ht = restruct_cl_ht(*ht);
+            //     printf("Превышено максимальное число сравнений, таблица была реструктурирована!\n");
+            //     cl_insert(ht, data);
+            // }
         }
 
-        if (tries <= (*ht)->tries)
+        // if (tries <= (*ht)->tries)
+        // {
+        // if (data == 31)
+            // printf("ind %zu, data %d, size: %zu", ind, data, (*ht)->size);
+        (*ht)->data[ind] = data; 
+        // }
+
+        // cl_insert(ht, data);
+        (*ht)->cur_tries += tries;
+        ++(*ht)->count;
+        (*ht)->average = (*ht)->cur_tries / ((double) (*ht)->count);
+        // printf("Среднее число сравнений: %lf\n", (*ht)->average);
+
+        if ((*ht)->average > (*ht)->tries)
         {
-            (*ht)->data[ind] = data; 
+            *ht = restruct_cl_ht(*ht);
+            printf("Среднее число сравнений %zu превысило максимальное, таблица была реструктурирована!\n", (*ht)->tries);
+            cl_insert(ht, data);
         }
-    }    
+        
+    }   
+    // printf("Среднее число сравнений: %lf\n", (*ht)->average); 
 }
 
 closed_hash_table_t *restruct_cl_ht(closed_hash_table_t *ht)
 {
     // int *new = calloc(sizeof(DATA_TYPE),  ht->size * 2);
     closed_hash_table_t *new = create_cl_hash_table(ht->size * 3);
+    new->tries = ht->tries;
 
     for (size_t i = 0; i < ht->size; ++i)
     {
         if (ht->data[i])
         {
+            // printf("data ins: %d", ht->data[i]);
             cl_insert(&new, ht->data[i]);
         }
     }
@@ -164,5 +187,7 @@ void look_up_cl_hash_table2(closed_hash_table_t *ht)
             printf("POS: %zu, DATA:%d\n", i, ht->data[i]);
         }
     }
+
+    printf("Среднее число сравнений: %lf\n", ht->average);
 }
 // void cl_del(closed_hash_table_t *ht);

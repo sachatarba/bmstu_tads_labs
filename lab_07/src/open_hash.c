@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #define TRIES 2
+#define EPS 1E-7
 
 open_hash_table_t *create_op_hash_table(size_t size)
 {
@@ -24,6 +25,9 @@ open_hash_table_t *create_op_hash_table(size_t size)
 
     ht->size = size;
     ht->tries = TRIES;
+    ht->cur_tries = 0;
+    ht->average = 0;
+    ht->count = 0;
 
     return ht;
 }
@@ -46,11 +50,11 @@ int op_find(open_hash_table_t *ht, DATA_TYPE data)
 {
     size_t ind = op_hash(ht, data);
 
-    size_t tries = 0;
+    size_t tries = 1;
     node_t *temp = find(ht->lists[ind], data, copmare_int, &tries);
     
     if (temp) {
-        printf("Элемент со значением %d найден в таблице с попытки %zu\n", temp->data, tries);
+        printf("Элемент со значением %d найден в таблице с попытки №%zu\n", temp->data, tries);
         return 1;
     }
     else {
@@ -62,8 +66,19 @@ int op_find(open_hash_table_t *ht, DATA_TYPE data)
 void op_insert(open_hash_table_t **ht, DATA_TYPE data)
 {
     size_t ind = op_hash(*ht, data);
+    size_t tries = 0;
 
-    push_back((*ht)->lists + ind, data);
+    push_back((*ht)->lists + ind, data, &tries);
+    // printf("tries: %zu", tries);
+    (*ht)->cur_tries += tries;
+    (*ht)->count += 1;
+    (*ht)->average = (*ht)->cur_tries / ((double) (*ht)->count);
+
+    if ((*ht)->average > (*ht)->tries)
+    {
+        (*ht) = restruct_op_ht(*ht);
+        printf("Среднее число сравнений превысило максимальное, таблица была реструктурирована!\n");
+    }
 }
 
 void look_up_op_hash_table2(open_hash_table_t *ht);
@@ -78,11 +93,14 @@ void look_up_op_hash_table1(open_hash_table_t *ht)
             list_int_lookup(ht->lists[i]);
         }
     }
+
+    printf("Среднее число сравнений: %lf\n", ht->average);
 }
 
 open_hash_table_t *restruct_op_ht(open_hash_table_t *ht)
 {
     open_hash_table_t *new = create_op_hash_table(ht->size * 3);
+    new->tries = ht->tries;
 
     DATA_TYPE temp = 0;
     // size_t ind = 0;

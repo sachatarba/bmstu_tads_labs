@@ -12,6 +12,9 @@ struct open_hash
     node_t **lists;
     size_t size;
     size_t tries;
+    size_t cur_tries;
+    size_t count;
+    double average;
 };
 
 typedef struct open_hash open_hash_table_t;

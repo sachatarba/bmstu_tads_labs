@@ -13,7 +13,7 @@ struct node_lst
     node_t *next;
 };
 
-void push_back(node_t **head, const DATA_TYPE data);
+void push_back(node_t **head, const DATA_TYPE data, size_t *tries);
 
 DATA_TYPE pop_back(node_t **head);
 

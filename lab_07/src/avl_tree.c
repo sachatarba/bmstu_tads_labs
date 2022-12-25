@@ -3,6 +3,7 @@
 #include <stdio.h>
 // node(int k) { key = k; left = right = 0; height = 1; }
 
+int avl_tries; 
 
 avl_node_t *create_avl_node(int k)
 {
@@ -145,4 +146,24 @@ void avl_tree_export_to_dot(FILE *f, const char *tree_name, avl_node_t *tree)
     avl_tree_apply_pre(tree, avl_node_to_dot, f);
 
     fprintf(f, "}\n");
+}
+
+avl_node_t *avl_tree_lookup_2(avl_node_t *tree, int num)
+{
+    int cmp;
+    avl_tries = 1;
+    while (tree != NULL)
+    {
+        // cmp = strcmp(name, tree->name);
+        cmp = num - tree->key;
+        if (cmp == 0)
+            return tree;
+        else if (cmp < 0)
+            tree = tree->left;
+        else
+            tree = tree->right;
+        ++avl_tries;
+    }
+
+    return NULL;
 }

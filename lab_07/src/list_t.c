@@ -13,10 +13,11 @@ void free_node(node_t **head)
 }
 
 
-void push_back(node_t **head, const DATA_TYPE data)
-{
+void push_back(node_t **head, const DATA_TYPE data, size_t *tries)
+{ 
     if (*head == NULL)
     {
+        *tries = 1;
         *head = malloc(sizeof(node_t));
         (*head)->data = data;
         (*head)->next = NULL;
@@ -24,15 +25,19 @@ void push_back(node_t **head, const DATA_TYPE data)
     else
     {
         node_t *cur = *head;
-        
-        while (cur->next != NULL)
+        *tries = 2;
+        while (cur->next != NULL && cur->data != data)
         {
             cur = cur->next;
+            ++*tries;
         }
 
-        cur->next = malloc(sizeof(node_t));
-        cur->next->data = data;
-        cur->next->next = NULL;
+        if (cur->data != data)
+        {
+            cur->next = malloc(sizeof(node_t));
+            cur->next->data = data;
+            cur->next->next = NULL;
+        }
     }
 }
 
