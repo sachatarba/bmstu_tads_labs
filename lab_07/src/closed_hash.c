@@ -49,35 +49,34 @@ void free_cl_hash_table(closed_hash_table_t *ht)
     }
 }
 
-int cl_find(closed_hash_table_t *ht, int data)
+int cl_find(closed_hash_table_t *ht, int data, size_t *tries)
 {
     size_t ind = cl_hash(ht, data);
     
-    size_t tries = 1;
+    *tries = 1;
     
-    while (ht->data[ind] && tries <= ht->size)
+    while (ht->data[ind] && *tries <= ht->size)
     {
         if (ht->data[ind] == data)
         {
-            printf("Элемент с значением %d найден в таблице с попытки №%zu\n", data, tries);
-            tries = -1;
-            break;
+            // printf("Элемент с значением %d найден в таблице с попытки №%zu\n", data, tries);
+            // tries = -1;
+            // break;
+            // *count = tries;
+            return 1;
         }
-        else
-        {
-            ++tries;
-        }
-
+        ++*tries;
         ind = (ind + 1) % ht->size;
     }
 
-    if (tries != (size_t) -1)
-    {
-        printf("Элемента с значением %d нет в таблице, число попыток = %zu\n", data, tries);
-        return 0;
-    }
+    // if (tries != (size_t) -1)
+    // {
+    //     // printf("Элемента с значением %d нет в таблице, число попыток = %zu\n", data, tries);
+    //     return 0;
+    // }
 
-    return 1;
+
+    return 0;
 }
 
 void cl_insert(closed_hash_table_t **ht, DATA_TYPE data)

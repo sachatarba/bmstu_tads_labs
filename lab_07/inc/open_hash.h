@@ -25,7 +25,7 @@ size_t op_hash(open_hash_table_t *ht, DATA_TYPE data);
 
 void free_op_hash_table(open_hash_table_t *ht);
 
-int op_find(open_hash_table_t *ht, DATA_TYPE data);
+int op_find(open_hash_table_t *ht, DATA_TYPE data, size_t *count);
 
 void op_insert(open_hash_table_t **ht, DATA_TYPE data);
 

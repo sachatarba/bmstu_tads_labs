@@ -46,21 +46,19 @@ void free_op_hash_table(open_hash_table_t *ht)
     }
 }
 
-int op_find(open_hash_table_t *ht, DATA_TYPE data)
+int op_find(open_hash_table_t *ht, DATA_TYPE data, size_t *count)
 {
     size_t ind = op_hash(ht, data);
 
-    size_t tries = 1;
-    node_t *temp = find(ht->lists[ind], data, copmare_int, &tries);
+    *count = 1;
+    node_t *temp = find(ht->lists[ind], data, copmare_int, count);
     
     if (temp) {
-        printf("Элемент со значением %d найден в таблице с попытки №%zu\n", temp->data, tries);
+        // printf("Элемент со значением %d найден в таблице с попытки №%zu\n", temp->data, tries);
         return 1;
     }
-    else {
-        printf("Элемент не найден в таблице, число попыток = %zu\n", tries);
-        return 0;
-    }
+        // printf("Элемент не найден в таблице, число попыток = %zu\n", tries);
+    return 0;
 }
 
 void op_insert(open_hash_table_t **ht, DATA_TYPE data)

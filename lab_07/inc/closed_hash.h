@@ -23,7 +23,7 @@ size_t cl_hash(closed_hash_table_t *ht, DATA_TYPE data);
 
 void free_cl_hash_table(closed_hash_table_t *ht);
 
-int cl_find(closed_hash_table_t *ht, DATA_TYPE data);
+int cl_find(closed_hash_table_t *ht, DATA_TYPE data, size_t *tries);
 
 void cl_insert(closed_hash_table_t **ht, DATA_TYPE data);
 

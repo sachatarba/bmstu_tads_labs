@@ -26,7 +26,9 @@ const char menu[] =
 13. Поиск элемента в двоичном дереве поиска\n\
 14. Поиск элемента в сбалансированном дереве\n\
 15. Поиск элемента в закрытой хеш таблице\n\
-16. Поиск элемента в открытой хеш таблице\n\n\
+16. Поиск элемента в открытой хеш таблице\n\
+17. Установка пользовательского значения числа сравнений\n\
+18. Замер времени\n\n\
 ";
 
 int main(void)
@@ -372,7 +374,11 @@ int main(void)
                 {
                     // avl = insert(avl, a);
                     // op_insert(&op_ht, a);
+                    struct timespec b, e;
+                    timespec_get(&b, TIME_UTC);
                     struct tree_node_t *btree = btree_lookup_2(node, (void *) &a);
+                    timespec_get(&e, TIME_UTC);
+                    printf("Время поиска: %llu\n", calc_elapsed_time(&b, &e));
                     if (btree)
                     {
                         printf("Элемент со значением %d найден, число сравнений = %d\n", a, btries);
@@ -399,7 +405,11 @@ int main(void)
                 {
                     // avl = insert(avl, a);
                     // op_insert(&op_ht, a);
+                    struct timespec b, e;
+                    timespec_get(&b, TIME_UTC);
                     avl_node_t *avl_temp = avl_tree_lookup_2(avl, a);
+                    timespec_get(&e, TIME_UTC);
+                    printf("Время поиска: %llu\n", calc_elapsed_time(&b, &e));
                     if (avl_temp)
                     {
                         printf("Элемент со значением %d найден, число сравнений = %d\n", a, avl_tries);
@@ -425,7 +435,19 @@ int main(void)
                 {
                     // avl = insert(avl, a);
                     // op_insert(&op_ht, a);
-                    cl_find(cl_ht, a);
+                    // struct timespec e, b;
+                    size_t counter = 1;
+                    // timespec_get(&b, TIME_UTC);
+                    if (cl_find(cl_ht, a, &counter) == 1)
+                    {
+                        printf("Элемент с значением %d найден в таблице, число сравнений = %zu\n", a, counter);
+                    }
+                    else
+                    {
+                        printf("Элемент с значением %d НЕ найден в таблице, число сравнений = %zu\n", a, counter);
+                    }
+                    // timespec_get(&e, TIME_UTC);
+                    // printf("Время поиска: %llu\n", calc_elapsed_time(&b, &e));
                 }
                 else
                 {
@@ -443,7 +465,15 @@ int main(void)
                 {
                     // avl = insert(avl, a);
                     // op_insert(&op_ht, a);
-                    op_find(op_ht, a);
+                    size_t counter = 1;
+                    if (op_find(op_ht, a, &counter) == 1)
+                    {
+                        printf("Элемент с значением %d найден в таблице, число сравнений = %zu\n", a, counter);
+                    }
+                    else
+                    {
+                        printf("Элемент с значением %d НЕ найден в таблице, число сравнений = %zu\n", a, counter);
+                    }
                 }
                 else
                 {
@@ -471,6 +501,425 @@ int main(void)
                 }
                 printf("\n");
                 break; 
+            }
+            case 18:
+            {
+                {
+                FILE *fp = fopen("test100.txt", "r");
+                int num = 0;
+                struct tree_node_t *nbtree = NULL;
+                avl_node_t *navl = NULL;
+                closed_hash_table_t *n_cl = create_cl_hash_table(10000);
+                open_hash_table_t *n_op = create_op_hash_table(10000);
+                int *t_num = NULL;
+                int arr[100];
+                int i = 0;
+                
+                while (fscanf(fp, "%d", &num) == 1)
+                {
+                    // printf("%d", num);
+                    t_num = malloc(sizeof(int));
+                    *t_num = num;
+                    struct tree_node_t *t_node = node_create((void *) t_num); 
+                    nbtree = btree_insert(nbtree, t_node);
+                    navl = insert(navl, num);
+                    cl_insert(&n_cl, num);
+                    op_insert(&n_op, num);
+                    arr[i++] = num;
+                }
+
+                unsigned long long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+                // }
+
+                struct timespec b, e;
+                
+                for (int i = 0; i < 100; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    struct tree_node_t *as = btree_lookup_2(nbtree, (void*) (arr + i));
+                    assert(as);
+                    timespec_get(&e, TIME_UTC);
+                    t1 += calc_elapsed_time(&b, &e);
+                    // printf("элемент: %d, время поиска: %llu\n", *(int *)as->name, calc_elapsed_time(&b,&e));
+                }
+
+                t1 /= 100;
+
+
+                size_t s = 0;
+                for (int i = 0; i < 100; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    avl_tree_lookup_2(navl, arr[i]);
+                    timespec_get(&e, TIME_UTC);
+                    t2 += calc_elapsed_time(&b, &e);
+                }
+
+                t2 /= 100;
+
+                for (int i = 0; i < 100; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    cl_find(n_cl, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t3 += calc_elapsed_time(&b, &e);
+                }
+                t3 /= 100;
+
+                for (int i = 0; i < 100; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    op_find(n_op, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t4 += calc_elapsed_time(&b, &e);
+                }
+
+                t4 /= 100;
+                printf("Поиск на 100 элементах (среднее время)\n");
+                printf("Время поиска в ДДП: %llu\n", t1);
+                printf("Время поиска в АВЛ: %llu\n", t2);
+                printf("Время поиска в З.Т: %llu\n", t3);
+                printf("Время поиска в ОТ.Т: %llu\n", t4);
+                }
+                printf("\n");
+                {
+                FILE *fp = fopen("test500.txt", "r");
+                int num = 0;
+                struct tree_node_t *nbtree = NULL;
+                avl_node_t *navl = NULL;
+                closed_hash_table_t *n_cl = create_cl_hash_table(10000);
+                open_hash_table_t *n_op = create_op_hash_table(10000);
+                int *t_num = NULL;
+                int arr[500];
+                int i = 0;
+                
+                while (fscanf(fp, "%d", &num) == 1)
+                {
+                    // printf("%d", num);
+                    t_num = malloc(sizeof(int));
+                    *t_num = num;
+                    struct tree_node_t *t_node = node_create((void *) t_num); 
+                    nbtree = btree_insert(nbtree, t_node);
+                    navl = insert(navl, num);
+                    cl_insert(&n_cl, num);
+                    op_insert(&n_op, num);
+                    arr[i++] = num;
+                }
+
+                unsigned long long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+                // }
+
+                struct timespec b, e;
+                size_t s = 0;
+                for (int i = 0; i < 500; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    struct tree_node_t *as = btree_lookup_2(nbtree, (void*) (arr + i));
+                    assert(as);
+                    timespec_get(&e, TIME_UTC);
+                    t1 += calc_elapsed_time(&b, &e);
+                }
+
+                t1 /= 500;
+
+                for (int i = 0; i < 500; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    avl_tree_lookup_2(navl, arr[i]);
+                    timespec_get(&e, TIME_UTC);
+                    t2 += calc_elapsed_time(&b, &e);
+                }
+
+                t2 /= 500;
+
+                for (int i = 0; i < 500; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    cl_find(n_cl, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t3 += calc_elapsed_time(&b, &e);
+                }
+                t3 /= 500;
+
+                for (int i = 0; i < 500; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    op_find(n_op, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t4 += calc_elapsed_time(&b, &e);
+                }
+
+                t4 /= 500;
+                printf("Поиск на 500 элементах (среднее время)\n");
+                printf("Время поиска в ДДП: %llu\n", t1);
+                printf("Время поиска в АВЛ: %llu\n", t2);
+                printf("Время поиска в З.Т: %llu\n", t3);
+                printf("Время поиска в ОТ.Т: %llu\n", t4);
+                }
+                printf("\n");
+                {
+                FILE *fp = fopen("test1000.txt", "r");
+                int num = 0;
+                struct tree_node_t *nbtree = NULL;
+                avl_node_t *navl = NULL;
+                closed_hash_table_t *n_cl = create_cl_hash_table(10000);
+                open_hash_table_t *n_op = create_op_hash_table(10000);
+                int *t_num = NULL;
+                int arr[1000];
+                int i = 0;
+                
+                while (fscanf(fp, "%d", &num) == 1)
+                {
+                    // printf("%d", num);
+                    t_num = malloc(sizeof(int));
+                    *t_num = num;
+                    struct tree_node_t *t_node = node_create((void *) t_num); 
+                    nbtree = btree_insert(nbtree, t_node);
+                    navl = insert(navl, num);
+                    cl_insert(&n_cl, num);
+                    op_insert(&n_op, num);
+                    arr[i++] = num;
+                }
+
+                unsigned long long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+                // }
+
+                struct timespec b, e;
+                size_t s = 0;
+                for (int i = 0; i < 1000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    struct tree_node_t *as = btree_lookup_2(nbtree, (void*) (arr + i));
+                    assert(as);
+                    timespec_get(&e, TIME_UTC);
+                    t1 += calc_elapsed_time(&b, &e);
+                }
+
+                t1 /= 1000;
+
+                for (int i = 0; i < 1000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    avl_tree_lookup_2(navl, arr[i]);
+                    timespec_get(&e, TIME_UTC);
+                    t2 += calc_elapsed_time(&b, &e);
+                }
+
+                t2 /= 1000;
+
+                for (int i = 0; i < 1000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    cl_find(n_cl, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t3 += calc_elapsed_time(&b, &e);
+                }
+                t3 /= 1000;
+
+                for (int i = 0; i < 1000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    op_find(n_op, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t4 += calc_elapsed_time(&b, &e);
+                }
+
+                t4 /= 1000;
+                printf("Поиск на 1000 элементах (среднее время)\n");
+                printf("Время поиска в ДДП: %llu\n", t1);
+                printf("Время поиска в АВЛ: %llu\n", t2);
+                printf("Время поиска в З.Т: %llu\n", t3);
+                printf("Время поиска в ОТ.Т: %llu\n", t4);
+                }
+                printf("\n");
+                {
+                FILE *fp = fopen("test10000.txt", "r");
+                int num = 0;
+                struct tree_node_t *nbtree = NULL;
+                avl_node_t *navl = NULL;
+                closed_hash_table_t *n_cl = create_cl_hash_table(100000);
+                open_hash_table_t *n_op = create_op_hash_table(100000);
+                int *t_num = NULL;
+                int arr[10000];
+                int i = 0;
+                
+                while (fscanf(fp, "%d", &num) == 1)
+                {
+                    // printf("%d", num);
+                    t_num = malloc(sizeof(int));
+                    *t_num = num;
+                    struct tree_node_t *t_node = node_create((void *) t_num); 
+                    nbtree = btree_insert(nbtree, t_node);
+                    navl = insert(navl, num);
+                    cl_insert(&n_cl, num);
+                    op_insert(&n_op, num);
+                    arr[i++] = num;
+                }
+
+                unsigned long long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+                // }
+
+                struct timespec b, e;
+                size_t s = 0;
+                for (int i = 0; i < 10000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    struct tree_node_t *as = btree_lookup_2(nbtree, (void*) (arr + i));
+                    assert(as);
+                    timespec_get(&e, TIME_UTC);
+                    t1 += calc_elapsed_time(&b, &e);
+                }
+
+                t1 /= 10000;
+
+                for (int i = 0; i < 10000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    avl_tree_lookup_2(navl, arr[i]);
+                    timespec_get(&e, TIME_UTC);
+                    t2 += calc_elapsed_time(&b, &e);
+                }
+
+                t2 /= 10000;
+
+                for (int i = 0; i < 10000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    cl_find(n_cl, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t3 += calc_elapsed_time(&b, &e);
+                }
+                t3 /= 10000;
+
+                for (int i = 0; i < 10000; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    op_find(n_op, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t4 += calc_elapsed_time(&b, &e);
+                }
+
+                t4 /= 10000;
+                printf("Поиск на 10000 элементах (среднее время)\n");
+                printf("Время поиска в ДДП: %llu\n", t1);
+                printf("Время поиска в АВЛ: %llu\n", t2);
+                printf("Время поиска в З.Т: %llu\n", t3);
+                printf("Время поиска в ОТ.Т: %llu\n", t4);
+                }
+
+                printf("\n");
+                {
+                FILE *fp = fopen("test10.txt", "r");
+                int num = 0;
+                struct tree_node_t *nbtree = NULL;
+                avl_node_t *navl = NULL;
+                closed_hash_table_t *n_cl = create_cl_hash_table(10000);
+                open_hash_table_t *n_op = create_op_hash_table(10000);
+                int *t_num = NULL;
+                int arr[10];
+                int i = 0;
+                
+                while (fscanf(fp, "%d", &num) == 1)
+                {
+                    // printf("%d", num);
+                    t_num = malloc(sizeof(int));
+                    *t_num = num;
+                    struct tree_node_t *t_node = node_create((void *) t_num); 
+                    nbtree = btree_insert(nbtree, t_node);
+                    navl = insert(navl, num);
+                    cl_insert(&n_cl, num);
+                    op_insert(&n_op, num);
+                    arr[i++] = num;
+                }
+
+                unsigned long long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+                // }
+
+                struct timespec b, e;
+                size_t s = 0;
+                for (int i = 0; i < 10; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    struct tree_node_t *as = btree_lookup_2(nbtree, (void*) (arr + i));
+                    assert(as);
+                    timespec_get(&e, TIME_UTC);
+                    t1 += calc_elapsed_time(&b, &e);
+                    // printf("элемент: %d, время поиска: %llu\n", *(int *)as->name, calc_elapsed_time(&b,&e));
+                }
+
+                t1 /= 10;
+
+                for (int i = 0; i < 10; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    avl_tree_lookup_2(navl, arr[i]);
+                    timespec_get(&e, TIME_UTC);
+                    t2 += calc_elapsed_time(&b, &e);
+                }
+
+                t2 /= 10;
+
+                for (int i = 0; i < 10; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    cl_find(n_cl, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t3 += calc_elapsed_time(&b, &e);
+                }
+                t3 /= 10;
+
+                for (int i = 0; i < 10; ++i)
+                {
+                    timespec_get(&b, TIME_UTC);
+                    op_find(n_op, arr[i], &s);
+                    timespec_get(&e, TIME_UTC);
+                    t4 += calc_elapsed_time(&b, &e);
+                }
+
+                t4 /= 10;
+                printf("Поиск на 10 элементах (среднее время)\n");
+                printf("Время поиска в ДДП: %llu\n", t1);
+                printf("Время поиска в АВЛ: %llu\n", t2);
+                printf("Время поиска в З.Т: %llu\n", t3);
+                printf("Время поиска в ОТ.Т: %llu\n", t4);
+                }
+                printf("\n");
+                printf("Требуемая память\n");
+                printf("10 элементов\n");
+                printf("ДДП: %lu\n", sizeof(struct tree_node_t) * 10);
+                printf("АВЛ: %lu\n", sizeof(avl_node_t) * 10);
+                printf("З.Т: %lu\n", sizeof(int) * 10 + sizeof(closed_hash_table_t));
+                printf("ОТ.Т: %lu\n", sizeof(node_t) + sizeof(node_t *) * 10 + sizeof(open_hash_table_t));
+                printf("\n");
+                // printf("Требуемая память\n");
+                printf("100 элементов\n");
+                printf("ДДП: %lu\n", sizeof(struct tree_node_t) * 100);
+                printf("АВЛ: %lu\n", sizeof(avl_node_t) * 100);
+                printf("З.Т: %lu\n", sizeof(int) * 100 + sizeof(closed_hash_table_t));
+                printf("ОТ.Т: %lu\n", sizeof(node_t) + sizeof(node_t *) * 100 + sizeof(open_hash_table_t));
+                printf("\n");
+                // printf("Требуемая память\n");
+                printf("500 элементов\n");
+                printf("ДДП: %lu\n", sizeof(struct tree_node_t) * 500);
+                printf("АВЛ: %lu\n", sizeof(avl_node_t) * 500);
+                printf("З.Т: %lu\n", sizeof(int) * 500 + sizeof(closed_hash_table_t));
+                printf("ОТ.Т: %lu\n", sizeof(node_t) + sizeof(node_t *) * 500 + sizeof(open_hash_table_t));
+                printf("\n");
+                // printf("Требуемая память\n");
+                printf("1000 элементов\n");
+                printf("ДДП: %lu\n", sizeof(struct tree_node_t) * 1000);
+                printf("АВЛ: %lu\n", sizeof(avl_node_t) * 1000);
+                printf("З.Т: %lu\n", sizeof(int) * 1000+ sizeof(closed_hash_table_t));
+                printf("ОТ.Т: %lu\n", sizeof(node_t) + sizeof(node_t *) * 1000 + sizeof(open_hash_table_t));
+                printf("\n");
+                // printf("Требуемая память\n");
+                printf("10000 элементов\n");
+                printf("ДДП: %lu\n", sizeof(struct tree_node_t) * 10000);
+                printf("АВЛ: %lu\n", sizeof(avl_node_t) * 10000);
+                printf("З.Т: %lu\n", sizeof(int) * 10000 + sizeof(closed_hash_table_t));
+                printf("ОТ.Т: %lu\n", sizeof(node_t) + sizeof(node_t *) * 10000 + sizeof(open_hash_table_t));
+
+                break;
             }
             default:
             {
