@@ -56,6 +56,23 @@ void print_array_int(int *arr, size_t size)
     }
 }
 
+#include <unistd.h>
+void print_array_long(long *arr, size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        printf("%ld ", arr[i]);
+    }
+}
+
+void print_array_SSIZE_t(ssize_t *arr, size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        printf("%zd ", arr[i]);
+    }
+}
+
 void print_array_size_t(size_t *arr, size_t size)
 {
     for (size_t i = 0; i < size; ++i)

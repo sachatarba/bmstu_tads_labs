@@ -148,7 +148,7 @@ int main(void)
                                     if (!is_full_stack_arr(arr))
                                     {
                                         void *p = NULL;
-                                        printf("Введите адрес в формате десятичного числа: ");
+                                        printf("Введите адрес в формате шестнадцатеричного числа: ");
 
                                         if (scanf("%p", &p) == 1)
                                         {

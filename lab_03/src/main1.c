@@ -116,6 +116,8 @@ int main(void)
                         if (rc == OK)
                         {
                             rc = rand_sparse_matr_by_percent(&matr, rows, cols, percent);
+
+                            // print_sp_matrix(&matr);
                             
                             if (rc == OK)
                                 rand_sparse_matr_by_percent(&vector, cols, 1, percent);
@@ -152,6 +154,7 @@ int main(void)
                                 sparse_matr_t *sp_res = NULL;
                                 transform_to_sparse_matr(res, &sp_res);
                                 print_sparse_matr(stdout, sp_res);
+                                print_sp_matrix(sp_res);
                             }
                             printf("--------------\n");
                             break;

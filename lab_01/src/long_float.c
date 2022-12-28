@@ -181,27 +181,6 @@ void normalize_number(long_float_t *lf)
     }
 }
 
-
-// void round_array(int *array, size_t size)
-// {
-//     if (array[MANTISSA_SIZE] >= 5)
-//     {
-
-//     }
-// }
-
-// Удаление незначащих нулей
-// void remove_zeros(long_float_t *lf)
-// {
-//     size_t i = MANTISSA_SIZE - lf->digits;
-//     while (lf->mantissa[i] == 0 && i < MANTISSA_SIZE)
-//     {
-//         --lf->digits;
-//         ++i;
-//     }
-// }
-//9999999999999999999999999999980
-
 // Умножение чдлинных чисел
 int mul_long_floats(long_float_t *l, long_float_t *r, long_float_t *res)
 {
@@ -269,7 +248,6 @@ void print_long_float(long_float_t *lf)
     if (lf->digits == 0)
     {
         printf("0e0\n");
-        // 0.90000000000000000000000000002
     }
     else if (abs(lf->exponent) >= MAX_EXPONENT )
     {

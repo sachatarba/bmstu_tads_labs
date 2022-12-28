@@ -1,4 +1,6 @@
 #include "../inc/closed_hash.h"
+#include <math.h>
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -142,10 +144,39 @@ void cl_insert(closed_hash_table_t **ht, DATA_TYPE data)
     // printf("Среднее число сравнений: %lf\n", (*ht)->average); 
 }
 
+static int is_prime(int number)
+{
+    size_t sq = (size_t) sqrt(number);
+    // printf("%zu\n", sq);
+    for (size_t i = 1; i <= sq; ++i)
+    {
+        if (number % sq == 0)
+            return 0;
+    }
+
+    return 1;
+}
+
+static int find_near_prime(int number)
+{
+    // size_t i = 1;
+    while (1)
+    {
+        // ++number;
+        // printf("%d\n", number);
+        if (is_prime(number))
+            return number;
+        ++number;
+        
+    }
+}
+
 closed_hash_table_t *restruct_cl_ht(closed_hash_table_t *ht)
 {
     // int *new = calloc(sizeof(DATA_TYPE),  ht->size * 2);
-    closed_hash_table_t *new = create_cl_hash_table(ht->size * 3);
+    size_t new_size = find_near_prime(ht->size * 1.2);
+    // printf("%zu\n",new_size);
+    closed_hash_table_t *new = create_cl_hash_table(new_size);
     new->tries = ht->tries;
 
     for (size_t i = 0; i < ht->size; ++i)

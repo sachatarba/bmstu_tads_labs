@@ -20,6 +20,8 @@ typedef struct sparse_matr sparse_matr_t;
 
 void free_sparse_matr(sparse_matr_t *sp_matr);
 
+void print_sp_matrix(sparse_matr_t *m);
+
 sparse_matr_t *create_sparse_matr(size_t rows, size_t cols, size_t elems_count);
 
 error_t read_sparse_matr(FILE *fp, sparse_matr_t *sp_matr);

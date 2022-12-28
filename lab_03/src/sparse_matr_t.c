@@ -22,6 +22,23 @@ void free_sparse_matr(sparse_matr_t *sp_matr)
     }
 }
 
+#include <unistd.h>
+void print_sp_matrix(sparse_matr_t *m)
+{
+    printf("Вывод ненулевых элементов: \n");
+    print_array_int(m->elems, m->elems_count);
+    printf("\n");
+    printf("Вывод столбцов элементов: \n");
+    for (size_t i = 0; i < m->cols; i++)
+        printf("%zd ", (ssize_t)m->cols_ind[i]);
+    
+    printf("\n");
+    printf("Вывод индексов, с которых начинаются строки: \n");
+    for (size_t i = 0; i < m->rows; i++)
+        printf("%zd ", (ssize_t)m->row_begin_ind[i]);
+    printf("\n");
+}
+
 sparse_matr_t *create_sparse_matr(size_t rows, size_t cols, size_t elems_count)
 {
     if (rows <= 0 || cols <= 0)
